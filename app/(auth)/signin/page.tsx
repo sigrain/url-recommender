@@ -16,8 +16,10 @@ export default function SignIn() {
 
     async function handleSignIn() {
         try {
-            await signin(email, password);
-            router.push('/ForYou');
+            // console.log(email, password)
+            const userCreds = await signin(email, password);
+            await console.log(userCreds)
+            router.push('/');
         } catch(error) {
             console.log(error);
         }
