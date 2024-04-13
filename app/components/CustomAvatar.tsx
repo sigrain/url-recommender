@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from "@nextui-org/react";
-
+import { useRouter } from 'next/navigation';
 const CustomAvatar = () => {
   const [visible, setVisible] = useState(false);
-
+    const router = useRouter();
   const handleDropdown = () => {
     setVisible(!visible);
   };
@@ -25,17 +25,8 @@ const CustomAvatar = () => {
             <p className="font-semibold">Signed in as</p>
             <p className="font-semibold">zoey@example.com</p>
           </DropdownItem>
-          <DropdownItem key="settings">
-            My Settings
-          </DropdownItem>
-          <DropdownItem key="team_settings">Team Settings</DropdownItem>
-          <DropdownItem key="analytics">
-            Analytics
-          </DropdownItem>
-          <DropdownItem key="system">System</DropdownItem>
-          <DropdownItem key="configurations">Configurations</DropdownItem>
-          <DropdownItem key="help_and_feedback">
-            Help & Feedback
+          <DropdownItem key="settings" onClick={()=> router.push("/Profile")}>
+            My Profile
           </DropdownItem>
           <DropdownItem key="logout" color="danger">
             Log Out
