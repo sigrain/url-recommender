@@ -2,7 +2,7 @@
 import React from "react";
 import { useRouter } from 'next/navigation';
 import {Input, Button} from "@nextui-org/react";
-import { signup } from "@/app/lib/firebase";
+import { signup } from "../../lib/firebase";
 
 export default function SignUp() {
     const [username, setUsername] = React.useState("");
