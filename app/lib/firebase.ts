@@ -25,6 +25,7 @@ const app = initializeApp(firebaseConfig);
 
 let firebaseApp: FirebaseApp;
 let auth: Auth;
+let firestore: Firestore;
 let user: User | null = null;
 
 if (typeof window !== "undefined" && !getApps().length) {
@@ -35,6 +36,13 @@ if (typeof window !== "undefined" && !getApps().length) {
         user = userData;
     })
 }
+
+firebaseApp = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+auth = getAuth();
+onAuthStateChanged(auth, (userData) => {
+    user = userData;
+})
 
 export const signup = async(email: string, password: string) => {
     try {
@@ -49,6 +57,7 @@ export const signin = async(email: string, password: string) => {
     try {
         let userCredentials = await signInWithEmailAndPassword(auth, email, password);
         user = userCredentials.user;
+        return user;
     } catch(error) {
         return error;
     }
