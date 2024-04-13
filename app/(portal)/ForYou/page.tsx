@@ -1,5 +1,6 @@
 import React from 'react'
-import CardComponent from 'app/components/CardComponent'
+//import CardComponent from 'app/components/CardComponent'
+import CardComponent from '../../components/CardComponent'
 const ForYou = () => {
   return (
     <div className="flex flex-1 flex-row m-auto justify-center p-10 gap-6 flex-wrap">
