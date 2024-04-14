@@ -56,7 +56,7 @@ const getURLTitleSummary = async () => {
         setURLTitle(title)
         setURLSummary(summary)
         // await addPost("", summary, title, newURL, user.uid, user.displayName)
-        setNewURL("");
+        // setNewURL("");
     } catch (error) {
         console.log(error)       
     }
@@ -64,10 +64,11 @@ const getURLTitleSummary = async () => {
 
 const saveNewPost = async () => {
     try {
-        console.log("addPoist")
+        console.log(urlSummary, urlTitle, newURL, user.uid, user.email)
         await addPost("", urlSummary, urlTitle, newURL, user.uid, user.displayName)
         setURLSummary("");
         setURLTitle("")
+        setNewURL("")
     } catch (error) {
         console.log(error)
     }

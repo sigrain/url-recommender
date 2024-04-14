@@ -82,7 +82,7 @@
 //         email: email,
 //     });
 // }
-
+"use client"
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore, addDoc, collection } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
@@ -134,6 +134,11 @@ export const signout = async () => {
     throw error;
   }
 };
+
+// const firestoreDB = initializeFirestore(firebaseApp, {
+//     experimentalForceLongPolling: true, // this line
+//     useFetchStreams: false, // and this line
+//   })
 
 // Add user to Firestore
 export const addUser = async (email: string, username: string) => {
