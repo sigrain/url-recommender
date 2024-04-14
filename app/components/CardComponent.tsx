@@ -1,9 +1,9 @@
 "use client"
 import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, Avatar, Button } from "@nextui-org/react";
-import { getUserIcon } from 'app/lib/firebase';
+import { getUserIcon, savePost } from 'app/lib/firebase';
 
-const CardComponent = ({ email, url, summary, title, userid }) => {
+const CardComponent = ({postId, email, url, summary, title, userid }) => {
   const [showMore, setShowMore] = useState(false);
 
   const summaryWords = summary.split(' ');
@@ -29,7 +29,7 @@ const CardComponent = ({ email, url, summary, title, userid }) => {
               <h5 className="text-small tracking-tight text-default-400">@zoeylang</h5>
             </div>
           </div>
-          <Button auto flat rounded color="default" size="sm">
+          <Button auto flat rounded color="default" size="sm" onClick={()=>savePost(postId)} >
             Save
           </Button>
         </CardHeader>
