@@ -70,6 +70,21 @@ export const signout = async () => {
   }
 };
 
+export const getFYPContent = async () => {
+  const data = [];
+  try {
+    const querySnapshot = await getDocs(collection(firestore, "posts"));
+    querySnapshot.forEach((doc) => {
+      // Push the document data along with its ID into the array
+      data.push({ id: doc.id, ...doc.data() });
+    });
+    console.log(data)
+    return data; // This will be an array of objects
+  } catch (error) {
+    console.error("Error getting documents: ", error);
+    return []; // Return an empty array in case of error
+  }
+};
 // const firestoreDB = initializeFirestore(firebaseApp, {
 //     experimentalForceLongPolling: true, // this line
 //     useFetchStreams: false, // and this line
