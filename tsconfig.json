@@ -33,7 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "app/lib/gemini-pro.js"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,9 +1,12 @@
+"use client"
 import React, { useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from "@nextui-org/react";
 import { useRouter } from 'next/navigation';
-const CustomAvatar = () => {
+import { UserAuth } from 'app/context/AuthContext';
+const CustomAvatar = ({logOut}) => {
   const [visible, setVisible] = useState(false);
     const router = useRouter();
+    const {user} = UserAuth()
   const handleDropdown = () => {
     setVisible(!visible);
   };
@@ -23,12 +26,12 @@ const CustomAvatar = () => {
         <DropdownMenu aria-label="Profile Actions" variant="flat">
           <DropdownItem key="profile" className="h-14 gap-2">
             <p className="font-semibold">Signed in as</p>
-            <p className="font-semibold">zoey@example.com</p>
+            <p className="font-semibold">{user.email}</p>
           </DropdownItem>
           <DropdownItem key="settings" onClick={()=> router.push("/Profile")}>
             My Profile
           </DropdownItem>
-          <DropdownItem key="logout" color="danger">
+          <DropdownItem key="logout" color="danger" onClick={logOut}>
             Log Out
           </DropdownItem>
         </DropdownMenu>
