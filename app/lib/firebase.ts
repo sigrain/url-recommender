@@ -1,6 +1,6 @@
 "use client"
 import { initializeApp, getApps, getApp, FirebaseApp, } from "firebase/app";
-import { Firestore, getFirestore, addDoc, collection } from "firebase/firestore";
+import { Firestore, getFirestore, addDoc, getDocs, collection } from "firebase/firestore";
 import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, StorageReference, listAll } from "firebase/storage";
 import firebase from "firebase/compat/app";
@@ -71,7 +71,7 @@ export const signout = async () => {
 };
 
 export const getFYPContent = async () => {
-  const data = [];
+  const data: any = [];
   try {
     const querySnapshot = await getDocs(collection(firestore, "posts"));
     querySnapshot.forEach((doc) => {
@@ -111,6 +111,12 @@ export const setProfileIcon = async (file: File) => {
 
 export const getProfileIcon = async () => {
   const storageRef = ref(storage, `users/${user?.uid}`);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+export const getUserIcon = async(userid: string) => {
+  const storageRef = ref(storage, `users/${userid}`);
   const url = await getDownloadURL(storageRef);
   return url;
 }
