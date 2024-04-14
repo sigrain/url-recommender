@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import {Avatar} from "@nextui-org/react";
+import { Avatar } from "@nextui-org/react";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {Chip, Button} from "@nextui-org/react";
 import { UserAuth } from 'app/context/AuthContext';

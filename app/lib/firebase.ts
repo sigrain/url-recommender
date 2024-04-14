@@ -18,7 +18,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
   appId: process.env.NEXT_PUBLIC_APPID
 };
-let user: User | null = null;
+
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //const auth = getAuth(app);
@@ -115,7 +115,8 @@ export const addUser = async (email: string, username: string) => {
   const userRef = d.collection('users').doc(user?.uid);
   userRef.set({
     username: username,
-    email: email
+    email: email,
+    posts: [],
   })
 };
 
@@ -131,6 +132,12 @@ export const getProfileIcon = async () => {
   const storageRef = ref(storage, `users/${user?.uid}`);
   const url = await getDownloadURL(storageRef);
   return url;
+}
+
+export const getProfileName = async () => {
+  const userRef = d.collection('users').doc(user?.uid);
+  const doc = await userRef.get();
+  return doc.data()?.username;
 }
 
 export const getUserIcon = async(userid: string) => {
