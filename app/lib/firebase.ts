@@ -1,8 +1,10 @@
 "use client"
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, addDoc, collection, getDocs } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, addDoc, collection, getDocs, doc } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
+import firebase from "firebase/compat/app"
 
+import "firebase/compat/firestore"
 // Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_APIKEY,
@@ -12,7 +14,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
   appId: process.env.NEXT_PUBLIC_APPID
 };
-
+let user: User | null = null;
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
@@ -34,6 +36,7 @@ export const signin = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     console.log(userCredential.user)
+    user = userCredential.user;
     return userCredential.user;
   } catch (error) {
     console.error("Signin error:", error);
@@ -66,6 +69,21 @@ export const getFYPContent = async () => {
     return []; // Return an empty array in case of error
   }
 };
+firebase.initializeApp(firebaseConfig)
+const db = firebase.firestore()
+
+export const getUserData = async () => {
+  try {
+    const data = await getFYPContent();
+    console.log(user?.uid)
+    const userPost = data.filter((post) => post.userid === user?.uid)
+    return userPost
+  } catch (error) {
+    console.error(error)
+  }
+};
+
+
 // const firestoreDB = initializeFirestore(firebaseApp, {
 //     experimentalForceLongPolling: true, // this line
 //     useFetchStreams: false, // and this line
