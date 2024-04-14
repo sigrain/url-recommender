@@ -65,7 +65,7 @@ const getURLTitleSummary = async () => {
 const saveNewPost = async () => {
     try {
         console.log(urlSummary, urlTitle, newURL, user.uid, user.email)
-        await addPost("", urlSummary, urlTitle, newURL, user.uid, user.displayName)
+        await addPost("", urlSummary, urlTitle, newURL, user.displayName)
         setURLSummary("");
         setURLTitle("")
         setNewURL("")

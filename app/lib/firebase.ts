@@ -1,7 +1,10 @@
 "use client"
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, addDoc, collection } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseApp, } from "firebase/app";
+import { Firestore, getFirestore, addDoc, collection } from "firebase/firestore";
+import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, StorageReference, listAll } from "firebase/storage";
+import firebase from "firebase/compat/app";
+import 'firebase/compat/firestore';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -15,8 +18,21 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const firestore = getFirestore(app);
+//const auth = getAuth(app);
+//const firestore = getFirestore(app);
+let user: User | null = null;
+
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+
+firebaseApp = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+auth = getAuth();
+firestore = getFirestore();
+onAuthStateChanged(auth, (userData) => {
+  user = userData;
+})
 
 // Sign up function
 export const signup = async (email: string, password: string) => {
@@ -34,6 +50,7 @@ export const signin = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     console.log(userCredential.user)
+    user = userCredential.user;
     return userCredential.user;
   } catch (error) {
     console.error("Signin error:", error);
@@ -56,15 +73,26 @@ export const signout = async () => {
 //     useFetchStreams: false, // and this line
 //   })
 
+const d = firebase.firestore();
+
 // Add user to Firestore
 export const addUser = async (email: string, username: string) => {
-  await addDoc(collection(firestore, 'users'), {
-    email: email,
-    username: username
+  const userRef = d.collection('users').doc(user?.uid);
+  userRef.set({
+    username: username,
+    email: email
   })
 };
 
-export const addPost = async (pp: string, summary: string, title: string, url: string, userid: string, username: string) => {
+const storage = getStorage();
+
+// Add user icon image to Storage
+export const addIcon = async (file: File) => {
+  const storageRef = ref(storage, `users/${user?.uid}`);
+  await uploadBytes(storageRef, file);
+}
+
+export const addPost = async (pp: string, summary: string, title: string, url: string, username: string) => {
     try {
     //   console.log(email, username);
       const docRef = await addDoc(collection(firestore, "posts"), {
@@ -72,7 +100,7 @@ export const addPost = async (pp: string, summary: string, title: string, url: s
         summary: summary,
         title: title,
         url: url,
-        userid: userid,
+        userid: user?.uid,
         username: username
       });
       console.log({docRef});
