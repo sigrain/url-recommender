@@ -1,94 +1,78 @@
 "use client"
-import React from "react";
+import React, { useRef } from "react";
 import { useState, ChangeEvent } from "react";
-import { Button } from "@nextui-org/react";
+import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import { validateImage } from "image-validator";
 import { useRouter } from 'next/navigation';
 import { setProfileIcon } from "../../lib/firebase";
+import { Avatar } from "@nextui-org/react";
+import { getProfileName } from "../../lib/firebase";
 
 export default function SetProfile() {
-    const router = useRouter();
+    const route = useRouter();
 
-    const [file, setFile] = useState<File | null>(null);
-    const [text, setText] = useState<string>("");
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+    const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
-    const validateFile = async (selectedFile: File): Promise<boolean> => {
-        const limitFileSize = 3 * 1024 * 1024;
-    
-        if (selectedFile.size > limitFileSize) {
-          setErrorMsg("File size is too large, please keep it under 3 GB.");
-          return false;
-        }
-    
-        const isValidImage = await validateImage(selectedFile);
-    
-        if (!isValidImage) {
-          setErrorMsg("You cannot upload anything other than image files.");
-          return false;
-        }
-    
+    let selectedFile: any = null;
+
+    const validateFile = async (file: File) => {
+        // Add your validation logic here
         return true;
     };
 
-    const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
-        setErrorMsg(null);
-        e.preventDefault();
-        const selectedFile = e.target.files?.[0];
+    const handleImageSelect = async () => {
+        const files = fileInputRef.current?.files;
+        if (files && files[0]) {
+            selectedFile = files[0];
 
-        if (selectedFile && (await validateFile(selectedFile))) {
-            const reader = new FileReader();
+            if (await validateFile(selectedFile)) {
+                const reader = new FileReader();
 
-            reader.onloadend = () => {
-                setFile(selectedFile);
-                setImagePreview(reader.result as string);
-                setErrorMsg(null);
+                reader.onloadend = () => {
+                    setImagePreview(reader.result as string);
+                    setProfileIcon(selectedFile);
+                    setErrorMsg(null);
+                };
+
+                reader.readAsDataURL(selectedFile);
+            } else {
+                setErrorMsg('Invalid file type.');
             }
-
-            reader.readAsDataURL(selectedFile);
         }
     };
 
-    const uploadImage = () => {
-        if (!file) {
-            setErrorMsg("File not selected.");
-            return;
-        }
-        
-        setProfileIcon(file);
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
 
-        try {
-            router.push('/ForYou');
-        } catch(error) {
-            console.log(error);
-        }
+    const handleUpload = async() => {
+        await setProfileIcon(selectedFile);
+        route.push('/ForYou');
     }
 
     return (
-        <main className="p-10 flex h-full">
-            <div className='w-screen flex justify-center items-center'>
-            <div className='basis-1/3'>
-                <form>
-                    <input type="file" onChange={handleImageSelect} />
-                    <br />
-                    <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => {
-                        setText(e.target.value);
-                        setErrorMsg(null);
-                    }}
-                    />
-                    <br />
-                </form>
-                <p style={{ color: "red" }}>{errorMsg && errorMsg}</p>
-                <p className="mb-7"></p>
-                <Button color="primary" onPress={uploadImage}>
-                  Upload
-                </Button>
-            </div>
-            </div>
+        <main className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="w-full max-w-md p-8 space-y-6 rounded-xl bg-white shadow-xl">
+        <h1 className="text-4xl font-extrabold text-center text-gray-800">Profile Image</h1>
+        <div className="flex justify-center items-center">
+        {imagePreview && <Avatar isBordered radius="full" showFallback src={imagePreview} className="w-20 h-20 text-large justify-center" />}
+        {!imagePreview && <Avatar isBordered radius="full" showFallback src='https://images.unsplash.com/broken' className="w-20 h-20 text-large justify-center" />}
+        </div>
+        <div className="space-y-4">
+          <input
+            type="file"
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleImageSelect}
+          />
+          <Button className="w-full py-3 text-gray-900 bg-gray-300 rounded-lg hover:bg-gray-400 focus:outline-none" onClick={handleClick}>Select profile image</Button>
+          {errorMsg && <div>{errorMsg}</div>}
+          <Button className="w-full py-3 text-white bg-gray-800 rounded-lg hover:bg-gray-700 focus:outline-none" onClick={handleUpload}>Upload</Button>
+        </div>
+        <p className="text-xs text-center text-gray-500">By signing in, you agree to our Terms and Conditions.</p>
+        </div>
         </main>
-    )
+    );
 }
