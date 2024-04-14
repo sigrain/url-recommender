@@ -21,6 +21,7 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //const auth = getAuth(app);
 //const firestore = getFirestore(app);
 let user: User | null = null;
+let username: string = '';
 
 let firebaseApp: FirebaseApp;
 let auth: Auth;
@@ -35,10 +36,11 @@ onAuthStateChanged(auth, (userData) => {
 })
 
 // Sign up function
-export const signup = async (email: string, password: string) => {
+export const signup = async (name: string, email: string, password: string) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     console.log({res})
+    username = name;
   } catch (error) {
     console.error("Signup error:", error);
     throw error;
@@ -87,12 +89,18 @@ export const addUser = async (email: string, username: string) => {
 const storage = getStorage();
 
 // Add user icon image to Storage
-export const addIcon = async (file: File) => {
+export const setProfileIcon = async (file: File) => {
   const storageRef = ref(storage, `users/${user?.uid}`);
   await uploadBytes(storageRef, file);
 }
 
-export const addPost = async (pp: string, summary: string, title: string, url: string, username: string) => {
+export const getProfileIcon = async () => {
+  const storageRef = ref(storage, `users/${user?.uid}`);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+export const addPost = async (pp: string, summary: string, title: string, url: string) => {
     try {
     //   console.log(email, username);
       const docRef = await addDoc(collection(firestore, "posts"), {

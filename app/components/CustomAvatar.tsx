@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar } from "@nextui-org/react";
 import { useRouter } from 'next/navigation';
 import { UserAuth } from 'app/context/AuthContext';
+import { getProfileIcon } from '../lib/firebase';
+
 const CustomAvatar = ({logOut}) => {
   const [visible, setVisible] = useState(false);
     const router = useRouter();
@@ -10,6 +12,15 @@ const CustomAvatar = ({logOut}) => {
   const handleDropdown = () => {
     setVisible(!visible);
   };
+
+  const [image, setImage] = useState<string>();
+
+  const getProfileImage = async() => {
+    const icon = await getProfileIcon();
+    setImage(icon);
+  }
+
+  getProfileImage();
 
   return (
     <div>
@@ -20,7 +31,7 @@ const CustomAvatar = ({logOut}) => {
             size="lg"
             as="button"
             className="transition-transform"
-            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            src={image}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="Profile Actions" variant="flat">
