@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Avatar, Button, Input } from "@nextui-org/react";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -8,14 +8,17 @@ import { UserAuth } from 'app/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation'; // Updated import for useRouter
 import CustomAvatar from './CustomAvatar';
 import FitScreenIcon from '@mui/icons-material/FitScreen';
+import { getFYPContent } from 'app/lib/firebase';
 
-const Navbar = () => {
+export default function Navbar() {
     const router = useRouter();
     const pathname = usePathname(); // Updated for correct usage
     const {logOut} = UserAuth();
     console.log(pathname);
 
     return (
+        <div>
+        {pathname !== '/Search' &&
         <div className="p-4 min-h-20 w-full border-b-2 border-gray-200 bg-white shadow-sm flex items-center justify-between">
             <div className="flex items-center gap-4">
                 <FitScreenIcon className="text-3xl cursor-pointer" onClick={()=>router.push('/ForYou')} />
@@ -34,13 +37,13 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="flex-1 px-4">
-            <Input type="email" variant="bordered"  placeholder="Search" color="default" startContent={<SearchIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />} />
+            <Input type="email" variant="bordered"  placeholder="Search" color="default" startContent={<SearchIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />} onClick={()=>router.push('/Search')}/>
             </div>
             <div className="flex items-center gap-4">
                 <CustomAvatar logOut={logOut} />
             </div>
         </div>
+        }
+        </div>
     );
 };
-
-export default Navbar;
