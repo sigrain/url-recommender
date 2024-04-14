@@ -33,4 +33,20 @@ export const getDataFromURL = async (url) => {
     // Now, stringify the object into a properly formatted JSON string
     // console.log(JSON.stringify(text, null, 2));
 }
-getDataFromURL("https://man7.org/linux/man-pages/man3/getenv.3.html");
+
+export const getInterestsFromURL = async (data) => {
+  const genAI = new GoogleGenerativeAI("AIzaSyB1Gc9N9M3UfTo7KVCCcQqaK-OQyTcWZOg")
+  const model = genAI.getGenerativeModel({model: "gemini-pro"});
+  const prompt = `
+  These are the search history of a person
+    ${data}
+  Generate the user's interests describe using a single word for every interest that the user might have. 
+  U can only generate array of word. DO NOT INCLUDE SENTENCES AS THE INTEREST. Use ONLY ARRAY/LIST DATA STRUCTURE TO STORE THESE INTERESTS.
+  `  
+  const result = await model.generateContent(prompt)
+  const response = await result.response;
+  const text = response.text()
+  console.log(text.split(" ").map(item => item.replace(/[^a-zA-Z ]/g, '').trim()).filter(item => /[a-zA-Z]/.test(item)))
+  return text.split(" ").map(item => item.replace(/[^a-zA-Z ]/g, '').trim()).filter(item => /[a-zA-Z]/.test(item))
+}
+getInterestsFromURL(['Tech Central | For The People', 'Pythonで作った自作のPackageをMavenに公開する', 'Firestore - Adding Data', 'Pythonで作った自作のPackageをMavenに公開する', 'How to get data from Firestore by ID (which is UID)?', 'Firestore - Adding Data', 'Pythonで作った自作のPackageをMavenに公開する', 'Apple ID: A guide for parents and carers']);

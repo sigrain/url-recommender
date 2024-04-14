@@ -20,6 +20,7 @@
     "@nextui-org/react": "^2.2.10",
     "@radix-ui/react-avatar": "^1.0.4",
     "axios": "^1.6.8",
+    "axios-retry": "^4.1.0",
     "dotenv": "^16.4.5",
     "firebase": "^10.11.0",
     "framer-motion": "^11.0.28",
