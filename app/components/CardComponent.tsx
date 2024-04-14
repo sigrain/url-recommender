@@ -34,11 +34,11 @@ const CardComponent = ({ email, url, summary, title, userid }) => {
           </Button>
         </CardHeader>
         <CardBody className="px-3 py-6">
-          <h1 className="text-lg leading-normal text-default-400">
+          {/* <h1 className="text-lg leading-normal text-default-400">
             <a href={url} className="text-default-500 hover:text-default-600">{url}</a>
-          </h1>
+          </h1> */}
           <h1 className="text-xl font-bold leading-tight text-default-900 my-4">
-            {title}
+          <a href={url} className="text-black-500 hover:text-default-600">{title}</a>
           </h1>
           <h1 className="text-normal leading-snug text-default-500">
             {showMore ? summary : summaryPreview}

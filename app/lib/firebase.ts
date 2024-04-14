@@ -1,4 +1,5 @@
 "use client"
+
 import { initializeApp, getApps, getApp, FirebaseApp, } from "firebase/app";
 import { Firestore, getFirestore, addDoc, getDocs, collection } from "firebase/firestore";
 import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
@@ -6,6 +7,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL, StorageReference, listAll
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
 
+
+import "firebase/compat/firestore"
 // Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_APIKEY,
@@ -15,7 +18,7 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
   appId: process.env.NEXT_PUBLIC_APPID
 };
-
+let user: User | null = null;
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //const auth = getAuth(app);
@@ -85,6 +88,21 @@ export const getFYPContent = async () => {
     return []; // Return an empty array in case of error
   }
 };
+firebase.initializeApp(firebaseConfig)
+const db = firebase.firestore()
+
+export const getUserData = async () => {
+  try {
+    const data = await getFYPContent();
+    console.log(user?.uid)
+    const userPost = data.filter((post) => post.userid === user?.uid)
+    return userPost
+  } catch (error) {
+    console.error(error)
+  }
+};
+
+
 // const firestoreDB = initializeFirestore(firebaseApp, {
 //     experimentalForceLongPolling: true, // this line
 //     useFetchStreams: false, // and this line
