@@ -1,7 +1,7 @@
 "use client"
 
 import { initializeApp, getApps, getApp, FirebaseApp, } from "firebase/app";
-import { Firestore, getFirestore, addDoc, getDocs, collection } from "firebase/firestore";
+import { Firestore, getFirestore, addDoc, getDocs, collection, doc, updateDoc, arrayUnion, getDoc  } from "firebase/firestore";
 import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, StorageReference, listAll } from "firebase/storage";
 import firebase from "firebase/compat/app";
@@ -18,7 +18,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_MESSAGINGSENDERID,
   appId: process.env.NEXT_PUBLIC_APPID
 };
-let user: User | null = null;
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 //const auth = getAuth(app);
@@ -115,7 +114,8 @@ export const addUser = async (email: string, username: string) => {
   const userRef = d.collection('users').doc(user?.uid);
   userRef.set({
     username: username,
-    email: email
+    email: email,
+    saved: []
   })
 };
 
@@ -148,15 +148,87 @@ export const addPost = async (pp: string, summary: string, title: string, url: s
         title: title,
         url: url,
         userid: user?.uid,
-        username: username
+        username: user?.email
       });
       console.log({docRef});
     } catch (error) {
-      console.error("Add user error:", error);
+      console.error("Add post error:", error);
       throw error;
     }
   };
 
+  export const savePost = async (postId: string) => {
+    try {
+      // Ensure that userId is defined and not null
+      const myDocRef = doc(db, 'users', user?.uid); // Correctly reference the user's document
+      await updateDoc(myDocRef, {
+        saved: arrayUnion(postId) // Use arrayUnion to append to the 'saved' array
+      });
+    } catch (error) {
+      console.error("Save post error:", error);
+      throw error;
+    }
+  };
+
+  export const getSavedPostIDs = async () => {
+    try {
+      if (!user?.uid) {
+        throw new Error('User ID is undefined');
+      }
+      const myDocRef = doc(db, 'users', user?.uid);
+      const docSnap = await getDoc(myDocRef);
+  
+      if (docSnap.exists()) {
+        console.log("Saved posts:", docSnap.data().saved);
+        return docSnap.data().saved; // This will return the 'saved' attribute
+      } else {
+        console.log("No such document!");
+        return []; // Return an empty array if the document does not exist
+      }
+    } catch (error) {
+      console.error("Error getting saved posts:", error);
+      throw error;
+    }
+  };
+  
+  export const getPostById = async (postId) => {
+    try {
+      if (!postId) {
+        throw new Error('Post ID is undefined');
+      }
+      const postRef = doc(db, "posts", postId);
+      const postSnap = await getDoc(postRef);
+  
+      if (postSnap.exists()) {
+        console.log("Post data:", postSnap.data());
+        return postSnap.data(); // This will return the post data
+      } else {
+        console.log("No such post!");
+        return null; // Return null if the post does not exist
+      }
+    } catch (error) {
+      console.error("Error getting post:", error);
+      throw error;
+    }
+  };
+
+  export const getSavedPosts = async () => {
+    let data = [];
+    try {
+      const savedPostsId = await getSavedPostIDs(); // Call the correct function to get the IDs
+      const postsPromises = savedPostsId.map(async (postId) => {
+        return getPostById(postId); // Make sure to return the promise
+      });
+      data = await Promise.all(postsPromises); // Wait for all promises to resolve
+      console.log(data);
+      return data;
+    } catch (error) {
+      console.error("Error getting saved posts:", error);
+      throw error;
+    }
+  };
+  
+  
 // Listen for auth state changes
 /*
 export const listenForAuthChanges = (callback) => {

@@ -92,7 +92,7 @@ const logOut = () => {
 };
 
 export const UserAuth = () => {
-    console.log(useContext(AuthContext));
+    // console.log(useContext(AuthContext));
     return useContext(AuthContext);
 };
 
