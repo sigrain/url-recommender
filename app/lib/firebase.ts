@@ -1,8 +1,12 @@
 "use client"
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, addDoc, collection, getDocs, doc } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
-import firebase from "firebase/compat/app"
+
+import { initializeApp, getApps, getApp, FirebaseApp, } from "firebase/app";
+import { Firestore, getFirestore, addDoc, getDocs, collection } from "firebase/firestore";
+import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, StorageReference, listAll } from "firebase/storage";
+import firebase from "firebase/compat/app";
+import 'firebase/compat/firestore';
+
 
 import "firebase/compat/firestore"
 // Firebase configuration
@@ -17,14 +21,29 @@ const firebaseConfig = {
 let user: User | null = null;
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const firestore = getFirestore(app);
+//const auth = getAuth(app);
+//const firestore = getFirestore(app);
+let user: User | null = null;
+let username: string = '';
+
+let firebaseApp: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
+
+firebaseApp = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+auth = getAuth();
+firestore = getFirestore();
+onAuthStateChanged(auth, (userData) => {
+  user = userData;
+})
 
 // Sign up function
-export const signup = async (email: string, password: string) => {
+export const signup = async (name: string, email: string, password: string) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     console.log({res})
+    username = name;
   } catch (error) {
     console.error("Signup error:", error);
     throw error;
@@ -55,7 +74,7 @@ export const signout = async () => {
 };
 
 export const getFYPContent = async () => {
-  const data = [];
+  const data: any = [];
   try {
     const querySnapshot = await getDocs(collection(firestore, "posts"));
     querySnapshot.forEach((doc) => {
@@ -89,15 +108,38 @@ export const getUserData = async () => {
 //     useFetchStreams: false, // and this line
 //   })
 
+const d = firebase.firestore();
+
 // Add user to Firestore
 export const addUser = async (email: string, username: string) => {
-  await addDoc(collection(firestore, 'users'), {
-    email: email,
-    username: username
+  const userRef = d.collection('users').doc(user?.uid);
+  userRef.set({
+    username: username,
+    email: email
   })
 };
 
-export const addPost = async (pp: string, summary: string, title: string, url: string, userid: string, username: string) => {
+const storage = getStorage();
+
+// Add user icon image to Storage
+export const setProfileIcon = async (file: File) => {
+  const storageRef = ref(storage, `users/${user?.uid}`);
+  await uploadBytes(storageRef, file);
+}
+
+export const getProfileIcon = async () => {
+  const storageRef = ref(storage, `users/${user?.uid}`);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+export const getUserIcon = async(userid: string) => {
+  const storageRef = ref(storage, `users/${userid}`);
+  const url = await getDownloadURL(storageRef);
+  return url;
+}
+
+export const addPost = async (pp: string, summary: string, title: string, url: string) => {
     try {
     //   console.log(email, username);
       const docRef = await addDoc(collection(firestore, "posts"), {
@@ -105,7 +147,7 @@ export const addPost = async (pp: string, summary: string, title: string, url: s
         summary: summary,
         title: title,
         url: url,
-        userid: userid,
+        userid: user?.uid,
         username: username
       });
       console.log({docRef});

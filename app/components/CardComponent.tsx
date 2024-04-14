@@ -1,58 +1,29 @@
-// import React from 'react'
-// import {Card, CardHeader, CardBody, CardFooter, Avatar, Button} from "@nextui-org/react";
-// const CardComponent = ({email, url, summary, title}) => {
-//   return (
-//     <div>
-//       <Card className="max-w-350">
-//       <CardHeader className="justify-between">
-//         <div className="flex gap-5">
-//           <Avatar isBordered radius="full" size="md" src="/avatars/avatar-1.png" />
-//           <div className="flex flex-col gap-1 items-start justify-center">
-//             <h4 className="text-small font-semibold leading-none text-default-600">{email}</h4>
-//             <h5 className="text-small tracking-tight text-default-400">@zoeylang</h5>
-//           </div>
-//         </div>
-//         <Button    
-//           color="default"
-//           radius="full"
-//           size="sm"
-//         >
-//           Save
-//         </Button>
-//       </CardHeader>
-//       <CardBody className="px-3 py-6 text-small text-default-400">
-//         <p>
-//           {url}
-//         </p>
-//         <span className="pt-2">
-//         {title}
-//           <span className="py-2" aria-label="computer" role="img">
-//             {summary}
-//           </span>
-//         </span>
-//       </CardBody>
-//     </Card>
-//     </div>
-//   )
-// }
-
-// export default CardComponent
 "use client"
 import React, { useState } from 'react';
 import { Card, CardHeader, CardBody, Avatar, Button } from "@nextui-org/react";
+import { getUserIcon } from 'app/lib/firebase';
 
-const CardComponent = ({ email, url, summary, title }) => {
+const CardComponent = ({ email, url, summary, title, userid }) => {
   const [showMore, setShowMore] = useState(false);
 
   const summaryWords = summary.split(' ');
   const summaryPreview = summaryWords.slice(0, 30).join(' ') + (summaryWords.length > 30 ? '...' : '');
+
+  const [image, setImage] = useState<string>();
+
+  const setUserIcon = async() => {
+    const url = await getUserIcon(userid);
+    setImage(url);
+  }
+
+  setUserIcon();
 
   return (
     <div>
       <Card className="max-w-350 bg-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
         <CardHeader className="justify-between bg-white">
           <div className="flex gap-5">
-            <Avatar isBordered radius="full" size="md" src="/avatars/avatar-1.png" />
+            <Avatar isBordered radius="full" size="md" src={image} />
             <div className="flex flex-col gap-1 items-start justify-center">
               <h4 className="text-small font-semibold leading-none text-default-600">{email}</h4>
               <h5 className="text-small tracking-tight text-default-400">@zoeylang</h5>
