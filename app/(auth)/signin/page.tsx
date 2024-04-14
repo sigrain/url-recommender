@@ -3,13 +3,13 @@ import React from "react";
 import { useRouter } from 'next/navigation';
 import {Input, Button} from "@nextui-org/react";
 import { signin } from "../../lib/firebase";
-
+import { UserAuth } from "app/context/AuthContext";
 export default function SignIn() {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
 
     const router = useRouter();
-
+    const {user, setUser} = UserAuth()
     function handleSignUp() {
         router.push('./signup');
     }
@@ -18,8 +18,9 @@ export default function SignIn() {
         try {
             // console.log(email, password)
             const userCreds = await signin(email, password);
+            setUser(userCreds);
             await console.log(userCreds)
-            router.push('/');
+            router.push('/ForYou');
         } catch(error) {
             console.log(error);
         }

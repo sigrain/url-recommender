@@ -12,19 +12,15 @@ export default function HomescreenLayout({
 }) {
     const router = useRouter()
     const { user, loading } = UserAuth();
-    console.log(user, loading)
+    // console.log(user, loading)
     useEffect(() => {
+        console.log(user)
         if (!loading && user == null) {
             router.push('/signin');
         }
     }, [user, loading]);
-    // if (user === null) {
-    //     return null; // Or a loading indicator if preferred
-    // }
+    
     // Log the user state for debugging
-    console.log(user);
-
-    // Render the layout only if the user is not null
     return (
         <AuthContextProvider>
             <div>

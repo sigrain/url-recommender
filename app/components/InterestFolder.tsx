@@ -1,71 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import { Card, CardFooter, Image } from "@nextui-org/react";
-import autoAnimate from '@formkit/auto-animate';
+import React from 'react';
+import { Button } from "@nextui-org/react";
 
-const InterestFolder = ({ interest }) => {
-  const footerRef = useRef(null);
+export default function InterestFolder({interest}) {
+    // Define the new background image URL
+    const bgImageUrl = "https://images.pexels.com/photos/18114939/pexels-photo-18114939.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2";
 
-  useEffect(() => {
-    if (footerRef.current) {
-      autoAnimate(footerRef.current);
-    }
-  }, []);
-
-  return (
-    <Card isFooterBlurred radius="lg" className="border-none w-full md:w-1/3 lg:max-h-300px"> {/* Responsive width and max height */}
-      <Image
-        alt="Woman listing to music"
-        className="object-cover"
-        height={"60%"}
-        src="https://images.pexels.com/photos/16694237/pexels-photo-16694237.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-        width={"100%"}
-        css={{ transition: 'transform 0.3s ease-in-out', '&:hover': { transform: 'scale(1.05)' } }} // Zoom effect on hover
-      />
-      <CardFooter
-        ref={footerRef}
-        css={{
-          position: "absolute",
-          bottom: 0,
-          zIndex: 1,
-          width: "100%",
-          background: "rgba(0, 0, 0, 0.3)",
-          backdropFilter: "blur(5px)",
-          transition: "background 0.3s, color 0.3s ease-in-out",
-          "@smMax": {
-            background: "rgba(0, 0, 0, 0.7)",
-            padding: "1rem", // Increased padding for smaller screens
-          },
-          "&:hover": {
-            background: "rgba(0, 0, 0, 0.7)",
-          },
-          "@media(min-width: 1281px)": {
-            maxHeight: "300px", // Max height for larger screens
-          },
-        }}
-      >
-        <p
-          css={{
-            color: "$white",
-            fontSize: "$tiny",
-            textAlign: "center",
-            padding: "$4",
-            transition: "color 0.3s ease-in-out",
-            "@smMax": {
-              fontSize: "$base",
-            },
-            "&:hover": {
-              color: "$yellow500", // Highlight text on hover
-            },
-            "@media(min-width: 1281px)": {
-              fontSize: "$lg", // Larger font size for desktop
-            },
-          }}
-        >
-          {interest}
-        </p>
-      </CardFooter>
-    </Card>
-  )
+    return (
+        <div>
+            {/* <h1 className="mt-20 mb-10 text-3xl font-semibold flex justify-center">Are you looking for</h1> */}
+            <main className="flex justify-center">
+                <div className="content-center">
+                    <Button className="ml-3 mt-3 w-80 h-48 bg-center brightness-95" style={{ backgroundImage: `url(${bgImageUrl})` }}>
+                        <h1 className="text-xl text-white font-semibold">{interest}</h1>
+                    </Button>
+                </div>
+            </main>
+        </div>
+    );
 }
-
-export default InterestFolder;

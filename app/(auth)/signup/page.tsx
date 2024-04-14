@@ -14,7 +14,7 @@ export default function SignUp() {
     async function handleSignUp() {
         try {
             await signup(email ?? "", password ?? "");
-            await addUser(username ?? "", email ?? "");
+            await addUser(email ?? "", username ?? "");
         } catch(error) {
             console.log(error);
         }

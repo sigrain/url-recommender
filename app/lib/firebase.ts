@@ -114,7 +114,7 @@ export const signup = async (email, password) => {
 };
 
 // Sign in function
-export const signin = async (email, password) => {
+export const signin = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     console.log(userCredential.user)
@@ -136,18 +136,40 @@ export const signout = async () => {
 };
 
 // Add user to Firestore
-export const addUser = async (name, email, uid) => {
+export const addUser = async (email: string, username: string) => {
   try {
-    await addDoc(collection(firestore, 'users'), {
-      uid,
-      name,
-      email,
-    });
+    console.log(email, username);
+    const myCollection = collection(firestore, 'users');
+    const myDocumentData = {
+        email: email,
+        icon: "",
+        username: username,
+    };
+    const newDocRef = await addDoc(myCollection, myDocumentData);
+    console.log({newDocRef});
   } catch (error) {
     console.error("Add user error:", error);
     throw error;
   }
 };
+
+export const addPost = async (pp: string, summary: string, title: string, url: string, userid: string, username: string) => {
+    try {
+    //   console.log(email, username);
+      const docRef = await addDoc(collection(firestore, "posts"), {
+        pp: pp,
+        summary: summary,
+        title: title,
+        url: url,
+        userid: userid,
+        username: username
+      });
+      console.log({docRef});
+    } catch (error) {
+      console.error("Add user error:", error);
+      throw error;
+    }
+  };
 
 // Listen for auth state changes
 export const listenForAuthChanges = (callback) => {
