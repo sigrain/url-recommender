@@ -1,9 +1,9 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Avatar, Chip, Button } from "@nextui-org/react";
+import { Avatar, Chip, Button, Input } from "@nextui-org/react";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { UserAuth } from 'app/context/AuthContext';
-import { getSavedPosts } from 'app/lib/firebase';
+import { getSavedPosts, getProfileIcon, getProfileName, updateUserName } from 'app/lib/firebase';
 import InterestFolder from 'app/components/InterestFolder';
 import { getInterestsFromURL } from 'app/lib/gemini-pro';
 const Profile = () => {
@@ -12,6 +12,9 @@ const Profile = () => {
   const [savedTitles, setSavedTitles] = useState([])
   const [interests, setInterests] = useState([]);
   const { user } = UserAuth();
+  const [image, setImage] = useState<string>();
+  const [editState, setEditState] = useState<string>('Display');
+  const [name, setName] = useState<string>('');
 
   useEffect(() => {
     getSavedPosts().then(posts => {
@@ -31,17 +34,49 @@ const Profile = () => {
         }
     }
     getInterestsFromTitle();
+
+    const getProfileImage = async() => {
+      const icon = await getProfileIcon();
+      setImage(icon);
+    }
+    getProfileImage();
+
+    const getUsername = async() => {
+      const username = await getProfileName();
+      setName(username);
+    }
+    getUsername();
   }, []);
+
+  const editProfile = () => {
+    setEditState('Edit');
+  }
+
+  const editDone = async() => {
+    await updateUserName(name);
+    setEditState('Display');
+  }
 
   return (
     <div className="container mx-auto p-4">
       <div className="flex flex-col items-center gap-4">
-        <Avatar isBordered radius="full" src="https://i.pravatar.cc/150?u=a042581f4e29026704d" className="w-24 h-24" />
+        <Avatar isBordered radius="full" src={image} className="w-24 h-24" />
         <div className="flex flex-row items-center justify-center">
-          <h1 className="text-xl">{user.email}</h1>
-          <div className="cursor-pointer">
+          {editState == 'Display' && 
+          <div className="flex flex-row items-center justify-center">
+          <h1 className="text-xl pr-2">{name}</h1>
+          <Button isIconOnly size="sm" color="foreground" onClick={editProfile} className="mr-2">
             <EditOutlinedIcon/>
+          </Button>
+          <p></p>
           </div>
+          }
+          {editState == 'Edit' &&
+          <div className="flex flex-row items-center justify-center">
+          <Input value={name} onValueChange={setName} size="sm" className='mr-2'></Input>
+          <Button size="sm" onClick={editDone}>Done</Button>
+          </div>
+          }
         </div>
         <div className="flex flex-wrap justify-center gap-3">
           {interests.length > 0 && interests.map((interest, index) => (
