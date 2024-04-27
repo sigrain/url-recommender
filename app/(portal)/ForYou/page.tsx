@@ -4,9 +4,15 @@ import axios from 'axios'
 import axiosRetry from 'axios-retry';
 import CardComponent from 'app/components/CardComponent';
 import { getFYPContent, getUserData } from 'app/lib/firebase';
+import AddUrlCard from 'app/components/AddUrlCard';
+import { UserAuth } from 'app/context/AuthContext';
+import { Input } from '@nextui-org/react';
 
 const ForYou = () => {
-  const [contents, setContents] = useState();
+  const [contents, setContents] = useState<any>();
+  const [URL, setURL] = useState<any>();
+
+  const { newURL, setNewURL, getURLTitleSummary, urlTitle, urlSummary, saveNewPost } = UserAuth();
 
   const axiosInstance = axios.create();
   axiosRetry(axiosInstance, {
@@ -14,7 +20,8 @@ const ForYou = () => {
     retryDelay: axiosRetry.exponentialDelay, // Exponential back-off delay
   });
   
-  const fetchSimilarResults = async (url) => {
+  const fetchSimilarResults = async (url: string) => {
+    console.log(url);
     const options = {
       method: 'POST',
       url: 'https://api.exa.ai/findSimilar',
@@ -26,7 +33,7 @@ const ForYou = () => {
       data: {
         contents: { text: { maxCharacters: 200, includeHtmlTags: false } },
         url: url,
-        numResults: 10
+        numResults: 5
       }
     };
   
@@ -44,22 +51,19 @@ const ForYou = () => {
       const userPost = await getUserData();
       console.log(userPost)
       if (Array.isArray(userPost)) {
-        // Fetch similar results for each URL and wait for all to complete
-        const contentPromises = userPost.map(async (val) => {
-          const similarResults = await fetchSimilarResults(val.url);
-          // Call getURLTitleSummary for each similar URL
-          return Promise.all(similarResults.results.map(async (similarUrl) => {
-            return {
-              email: "magic@mail.com", // Placeholder email
-              url: similarUrl.url,
-              title: similarUrl.title,
-              summary: similarUrl.text
-            };
-          }));
-        });
+        const similarResults = await fetchSimilarResults("https://www.freecodecamp.org/news/greedy-algorithms/");
+        console.log(similarResults);
+        // Call getURLTitleSummary for each similar URL
+        const contentResults = await Promise.all(similarResults.results.map(async (similarUrl: any) => {
+          return {
+            email: "magic@mail.com", // Placeholder email
+            url: similarUrl.url,
+            title: similarUrl.title,
+            summary: similarUrl.text
+          };
+        }));
   
       //   // Wait for all content promises to resolve and flatten the results
-        const contentResults = await Promise.all(contentPromises);
         const flattenedContentResults = contentResults.flat(2);
         console.log(flattenedContentResults);
         setContents(flattenedContentResults);
@@ -77,8 +81,14 @@ const ForYou = () => {
     getPosts();
   }, []);
   
-  
   return (
+    <div>
+    <div className="flex justify-center items-center mt-20 mb-10">
+      <AddUrlCard newURL={newURL} setNewURL={setNewURL} getURLTitleSummary={getURLTitleSummary} urlTitle={urlTitle} urlSummary={urlSummary} saveNewPost={saveNewPost} />
+    </div>
+    <div className="flex justify-center items-center mt-20 mb-10">
+      <Input value={URL} onValueChange={setURL} />
+    </div>
     <div className="flex flex-wrap m-auto justify-center p-10 gap-6">
 {Array.isArray(contents) && contents.map((content) => {
   // Ensure that content.doc exists and has an id property\\
@@ -98,7 +108,7 @@ const ForYou = () => {
     </div>
   );
 })}
-
+    </div>
     </div>
   );
 };

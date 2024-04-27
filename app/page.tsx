@@ -3,7 +3,7 @@ import React from "react";
 import Image from "next/image";
 import ForYou from "./(portal)/ForYou/page";
 import Navbar from "./components/Navbar";
-import { useRouter } from "node_modules/next/router";
+import { useRouter } from "next/navigation";
 // import {NextUIProvider} from "@nextui-org/react";
 import AuthContextProvider from "./context/AuthContext";
 import { UserAuth } from "./context/AuthContext";
