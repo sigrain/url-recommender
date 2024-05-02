@@ -146,9 +146,13 @@ export const getUserIcon = async(userid: string) => {
   return url;
 }
 
-// export const editUsername = async() => {
 
-// }
+export const updateUserName = async(username: string) => {
+  const userRef = d.collection('users').doc(user?.uid);
+  userRef.update({
+    username: username
+  });
+}
 
 export const addPost = async (pp: string, summary: string, title: string, url: string) => {
     try {
