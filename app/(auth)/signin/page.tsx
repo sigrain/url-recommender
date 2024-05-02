@@ -21,7 +21,7 @@ export default function SignIn() {
             const userCreds = await signin(email, password);
             setUser(userCreds);
             await console.log(userCreds)
-            router.push('./profileSetting');
+            router.push('/ForYou');
         } catch(error) {
             console.log(error);
             setError(true);
