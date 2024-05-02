@@ -1,56 +1,76 @@
-"use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardHeader, CardBody, Avatar, Button } from "@nextui-org/react";
 import { getUserIcon, savePost } from 'app/lib/firebase';
-
-const CardComponent = ({postId, email, url, summary, title, userid }) => {
+import "./animation.css"
+const CardComponent = ({ postId, email, url, summary, title, userid }) => {
   const [showMore, setShowMore] = useState(false);
+  const [image, setImage] = useState('');
+  const [isSaved, setIsSaved] = useState(false);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    const setUserIcon = async () => {
+      const iconUrl = await getUserIcon(userid);
+      setImage(iconUrl);
+    };
+
+    setUserIcon();
+  }, [userid]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (cardRef.current) {
+        const rect = cardRef.current.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+        if (isVisible) {
+          cardRef.current.classList.add('fadeInUp');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const handleSave = () => {
+    if (postId) {
+      savePost(postId);
+    }
+    setIsSaved(true);
+  };
 
   const summaryWords = summary.split(' ');
   const summaryPreview = summaryWords.slice(0, 30).join(' ') + (summaryWords.length > 30 ? '...' : '');
 
-  const [image, setImage] = useState<string>();
-
-  const setUserIcon = async() => {
-    const url = await getUserIcon(userid);
-    setImage(url);
-  }
-
-  setUserIcon();
-
   return (
-    <div>
-      <Card className="max-w-350 bg-gray-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-        <CardHeader className="justify-between bg-white">
-          <div className="flex gap-5">
+    <div ref={cardRef} className="flex flex-col h-full w-full p-4">
+      <Card className="flex flex-col bg-white rounded-lg overflow-hidden shadow-lg transform transition duration-500 hover:scale-105">
+        <CardHeader className="bg-gray-100 p-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
             <Avatar isBordered radius="full" size="md" src={image} />
-            <div className="flex flex-col gap-1 items-start justify-center">
-              <h4 className="text-small font-semibold leading-none text-default-600">{email}</h4>
-              <h5 className="text-small tracking-tight text-default-400">@zoeylang</h5>
+            <div className="flex flex-col">
+              <h4 className="text-sm font-semibold">{email}</h4>
+              <h5 className="text-xs text-gray-500">@zoeylang</h5>
             </div>
           </div>
-          <Button auto flat rounded color="default" size="sm" onClick={()=>savePost(postId)} >
-            Save
+          <Button auto flat rounded color="default" size="sm" onClick={handleSave}>
+            {isSaved ? 'Saved' : 'Save'}
           </Button>
         </CardHeader>
-        <CardBody className="px-3 py-6">
-          {/* <h1 className="text-lg leading-normal text-default-400">
-            <a href={url} className="text-default-500 hover:text-default-600">{url}</a>
-          </h1> */}
-          <h1 className="text-xl font-bold leading-tight text-default-900 my-4">
-          <a href={url} className="text-black-500 hover:text-default-600">{title}</a>
+        <CardBody className="flex-grow p-4">
+          <h1 className="text-xl font-bold mb-4 cursor-pointer">
+            <a href={url} className="text-black hover:text-blue-500 transition duration-300">{title}</a>
           </h1>
-          <h1 className="text-normal leading-snug text-default-500">
+          <p className="text-base text-gray-700">
             {showMore ? summary : summaryPreview}
             {summaryWords.length > 30 && (
-              <a href={url} className="text-default-500 hover:text-default-600 ml-2 cursor-pointer" onClick={(e) => {
-                e.preventDefault();
-                setShowMore(!showMore);
-              }}>
+              <span className="text-blue-500 hover:underline ml-2 cursor-pointer" onClick={() => setShowMore(!showMore)}>
                 {showMore ? 'Show Less' : 'See More'}
-              </a>
+              </span>
             )}
-          </h1>
+          </p>
         </CardBody>
       </Card>
     </div>

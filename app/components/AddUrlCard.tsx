@@ -25,19 +25,21 @@ const AddUrlCard = ({ newURL, setNewURL, getURLTitleSummary, urlTitle, urlSummar
             </div>
           )}
           {urlSummary && (
-            <div className="animate-fade-in-up">
-              <h3 className="text-xl font-bold text-gray-800">Summary:</h3>
-              <p className="text-gray-600">{urlSummary}</p>
-            </div>
+            <>
+                <div className="animate-fade-in-up">
+                  <h3 className="text-xl font-bold text-gray-800">Summary:</h3>
+                  <p className="text-gray-600">{urlSummary}</p>
+                </div>
+                <Button
+                shadow
+                color="gradient"
+                onClick={saveNewPost}
+                className="self-end mt-4"
+                >
+                Save
+              </Button>
+            </>
           )}
-          <Button
-            shadow
-            color="gradient"
-            onClick={saveNewPost}
-            className="self-end mt-4"
-          >
-            Save
-          </Button>
         </div>
       </CardBody>
     </Card>

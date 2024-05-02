@@ -146,6 +146,10 @@ export const getUserIcon = async(userid: string) => {
   return url;
 }
 
+// export const editUsername = async() => {
+
+// }
+
 export const addPost = async (pp: string, summary: string, title: string, url: string) => {
     try {
     //   console.log(email, username);

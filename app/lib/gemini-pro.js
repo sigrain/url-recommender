@@ -41,7 +41,7 @@ export const getInterestsFromURL = async (data) => {
   These are the search history of a person
     ${data}
   Generate the user's interests describe using a single word for every interest that the user might have. 
-  U can only generate array of word. DO NOT INCLUDE SENTENCES AS THE INTEREST. Use ONLY ARRAY/LIST DATA STRUCTURE TO STORE THESE INTERESTS.
+  U can only generate array of word. DO NOT INCLUDE SENTENCES AS THE INTEREST. Use ONLY ARRAY/LIST DATA STRUCTURE TO STORE THESE INTERESTS. PLEASE INCLUDE MAXIMUM OF 5 TOP INTERESTS ONLY.
   `  
   const result = await model.generateContent(prompt)
   const response = await result.response;
